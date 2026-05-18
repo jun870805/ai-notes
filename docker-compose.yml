@@ -1,0 +1,16 @@
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    container_name: ai-notes-db
+    environment:
+      POSTGRES_DB: ai_notes
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - ai_notes_db_data:/var/lib/postgresql/data
+      - ./infra/postgres:/docker-entrypoint-initdb.d:ro
+
+volumes:
+  ai_notes_db_data:

@@ -1,49 +1,88 @@
 # Client
 
-`client/` 是 AI Engineer Notes 的 React 前端。MVP 會使用 React、TypeScript、Vite、React Router、TanStack Query、Tailwind CSS 與 Markdown renderer。
+`client/` 是 AI 工程筆記的 React 前端，目前使用 React、TypeScript、Vite、React Router 與 Vitest。這一版已經有可執行的 MVP 畫面與測試，但資料仍以本地 mock state 為主，尚未串接後端 API。
 
-## 目標
+## 目前功能
 
-- 提供筆記列表、建立、編輯、刪除與閱讀介面。
-- 提供 Markdown editor 與 preview。
-- 提供 AI 語意搜尋頁面。
-- 提供 AI Chat 頁面，顯示回答與引用來源。
-- 將 API 呼叫集中在 `src/api/`，避免 UI 元件直接處理 HTTP 細節。
+- 筆記列表頁
+- 新增 / 編輯筆記頁
+- Markdown 預覽
+- AI 搜尋頁
+- AI 對話頁
+- 繁中介面文案
+- 基本前端測試與 coverage
 
-## 建議結構
+## 啟動方式
+
+```bash
+cd client
+npm install
+npm run dev
+```
+
+開發伺服器啟動後，預設可在 `http://localhost:5173` 開啟。
+
+## 常用指令
+
+```bash
+npm run dev
+npm run build
+npm run preview
+npm test
+npm run test:watch
+```
+
+## 測試
+
+目前測試使用 Vitest、Testing Library 與 jsdom。
+
+涵蓋範圍：
+
+- 主要導覽與繁中文案
+- `AI 搜尋` / `AI 對話` 頁面骨架一致性
+- 新增筆記與儲存流程
+- tab 切換
+- `mockData` 的搜尋與回答邏輯
+
+coverage 目前目標已達 80% 以上。
+
+## 目錄結構
 
 ```text
 client/
   public/
   src/
-    api/          # API client，例如 notes.ts、ai.ts
-    components/   # 可重用 UI 元件
-    pages/        # Route 對應頁面
-    routes/       # React Router 設定
-    hooks/        # 自訂 React hooks
-    types/        # 前端共用 TypeScript 型別
-    utils/        # 純函式工具
+    components/   # 共用 UI 元件
+    pages/        # 各 route 對應頁面
+    test/         # 測試初始化與 helper
+    types/        # 共用 TypeScript 型別
+    utils/        # 純函式與 mock data
+    App.tsx       # 路由與本地資料狀態
+    main.tsx      # 入口點
+    styles.css    # 全站樣式
 ```
 
-## 頁面範圍
+## 主要檔案
 
-- Notes List Page
-- Note Detail / Editor Page
-- AI Search Page
-- AI Chat Page
+- `src/App.tsx`：路由、notes store、本地 CRUD / search / chat 行為
+- `src/components/AppLayout.tsx`：全站版型與主導覽
+- `src/pages/NotesListPage.tsx`：筆記列表
+- `src/pages/NoteEditorPage.tsx`：新增 / 編輯 / 刪除 / 預覽
+- `src/pages/SearchPage.tsx`：AI 搜尋
+- `src/pages/ChatPage.tsx`：AI 對話
+- `src/utils/mockData.ts`：目前畫面用的 sample notes 與搜尋 / 回答邏輯
+- `src/App.test.tsx`、`src/utils/mockData.test.ts`：目前測試案例
 
-## API Boundary
+## 現況限制
 
-前端只透過後端 API 操作資料，不直接存取資料庫或 OpenAI API。
+- 目前尚未串接後端 API，資料存在 React local state
+- 重新整理後，新增或修改的筆記不會持久化
+- `AI 搜尋` 與 `AI 對話` 為前端 mock 行為，不是實際 embedding / retrieval / LLM 流程
+- Markdown preview 是輕量自製 renderer，僅支援目前 MVP 需要的基本語法
 
-預期 API client：
+## 下一步建議
 
-- `src/api/notes.ts`
-- `src/api/ai.ts`
-
-## 開發注意事項
-
-- Server state 使用 TanStack Query 管理。
-- Editor 內部輸入狀態使用 React local state。
-- Markdown preview 應避免直接渲染未清理 HTML。
-- UI 要能清楚呈現 AI 回答來源，讓使用者可追溯到原筆記。
+- 將 notes CRUD 改為呼叫後端 API
+- 將 `AI 搜尋` / `AI 對話` 接到實際的 server endpoint
+- 視需要再引入 TanStack Query 管理 server state
+- 補上更多元件級測試與錯誤情境測試

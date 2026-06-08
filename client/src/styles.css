@@ -1,19 +1,18 @@
 :root {
   color-scheme: light;
   --bg: #d4b895;
-  --bg-deep: #c08e3a;
   --panel: rgba(232, 220, 199, 0.78);
   --panel-strong: rgba(232, 220, 199, 0.92);
   --line: rgba(96, 108, 56, 0.22);
   --text: #3e3428;
   --text-soft: #655748;
+  --text-muted: #7f7161;
+  --text-faint: #958674;
   --moss: #606c38;
-  --sage: #8b9d83;
   --terracotta: #c66b3d;
   --moss-deep: #4d562d;
   --surface-hover: rgba(232, 220, 199, 0.94);
   --radius-lg: 28px;
-  --radius-md: 20px;
   --shadow: 0 18px 40px rgba(96, 108, 56, 0.14);
   --font-sans:
     "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", "Helvetica Neue",
@@ -85,9 +84,9 @@ button {
 
 .hero {
   display: grid;
-  grid-template-columns: 1.6fr 1fr;
-  gap: 24px;
-  padding: 24px;
+  grid-template-columns: minmax(0, 1fr) 260px;
+  gap: 18px;
+  padding: 22px 24px;
   border-radius: 32px;
   background: linear-gradient(135deg, rgba(232, 220, 199, 0.94), rgba(212, 184, 149, 0.88));
   border: 1px solid rgba(96, 108, 56, 0.16);
@@ -107,37 +106,29 @@ button {
 
 .hero__copy h1 {
   max-width: 12ch;
-  font-size: clamp(2.7rem, 6vw, 5.2rem);
-  line-height: 0.94;
+  font-size: clamp(2rem, 3.4vw, 3rem);
+  line-height: 1.04;
 }
 
 .hero__body {
-  max-width: 54ch;
-  margin: 18px 0 0;
-  color: var(--text-soft);
-  font-size: 1.02rem;
-  line-height: 1.7;
-}
-
-.eyebrow {
-  margin: 0 0 14px;
-  color: var(--moss);
-  font-size: 0.82rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  max-width: 42ch;
+  margin: 12px 0 0;
+  color: var(--text-muted);
+  font-size: 0.98rem;
+  line-height: 1.6;
 }
 
 .hero__meta {
   display: grid;
-  gap: 16px;
-  align-content: end;
+  justify-items: end;
+  align-content: center;
 }
 
 .hero__card {
   display: grid;
   gap: 8px;
-  padding: 18px 20px;
+  width: min(100%, 220px);
+  padding: 16px 18px;
   border-radius: var(--radius-lg);
   background: rgba(255, 255, 255, 0.16);
   border: 1px solid rgba(96, 108, 56, 0.14);
@@ -147,21 +138,20 @@ button {
 }
 
 .hero__card span,
-.support-copy,
 .note-card__meta,
 .panel__heading span,
 .source-card__header span {
-  color: var(--text-soft);
+  color: var(--text-faint);
 }
 
 .hero__card strong {
-  max-width: 22ch;
-  font-size: 1.05rem;
-  line-height: 1.45;
+  max-width: 16ch;
+  font-size: 1rem;
+  line-height: 1.35;
 }
 
 .hero__card--tilt {
-  transform: rotate(-2.5deg);
+  transform: rotate(-1.5deg);
 }
 
 .top-nav {
@@ -269,10 +259,10 @@ button {
 .section-heading h2 {
   margin: 0;
   font-family: var(--font-sans);
-  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-size: clamp(1.6rem, 2.8vw, 2.2rem);
   font-weight: 700;
   letter-spacing: -0.04em;
-  line-height: 1.02;
+  line-height: 1.08;
   max-width: 14ch;
 }
 
@@ -335,7 +325,7 @@ button {
   padding: 0 12px;
   border-radius: 999px;
   background: rgba(139, 157, 131, 0.18);
-  color: var(--moss);
+  color: #72804a;
   font-size: 0.88rem;
   font-weight: 700;
 }
@@ -367,7 +357,7 @@ button {
 }
 
 .field span {
-  color: var(--moss);
+  color: var(--text-muted);
   font-size: 0.9rem;
   font-weight: 700;
 }
@@ -477,6 +467,15 @@ textarea {
   .hero,
   .editor-layout {
     grid-template-columns: 1fr;
+  }
+
+  .hero__meta {
+    justify-items: start;
+  }
+
+  .hero__card {
+    width: 100%;
+    max-width: 240px;
   }
 
   .note-card,

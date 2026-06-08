@@ -10,7 +10,6 @@ export function NotesListPage() {
     <section className="page-grid">
       <div className="section-heading">
         <div>
-          <p className="eyebrow">筆記列表頁</p>
           <h2>筆記列表</h2>
         </div>
         <Link to="/notes/new" className="button">

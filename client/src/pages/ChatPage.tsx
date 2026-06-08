@@ -12,7 +12,6 @@ export function ChatPage() {
     <section className="page-grid">
       <div className="section-heading">
         <div>
-          <p className="eyebrow">AI 對話頁</p>
           <h2>AI 對話</h2>
         </div>
       </div>

@@ -12,7 +12,6 @@ export function SearchPage() {
     <section className="page-grid">
       <div className="section-heading">
         <div>
-          <p className="eyebrow">AI 搜尋頁</p>
           <h2>AI 搜尋</h2>
         </div>
       </div>

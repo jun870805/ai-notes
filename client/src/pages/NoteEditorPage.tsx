@@ -55,7 +55,6 @@ export function NoteEditorPage() {
     <section className="page-grid">
       <div className="section-heading">
         <div>
-          <p className="eyebrow">筆記詳情 / 編輯頁</p>
           <h2>{selectedNote ? "編輯筆記" : "新增筆記"}</h2>
         </div>
         <div className="button-row">

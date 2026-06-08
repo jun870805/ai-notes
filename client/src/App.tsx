@@ -108,7 +108,7 @@ function NotesStoreProvider() {
 
   return (
     <NotesStoreContext.Provider value={value}>
-      <AppLayout>
+      <AppLayout noteCount={notes.length}>
         <Routes>
           <Route path="/" element={<Navigate to="/notes" replace />} />
           <Route path="/notes" element={<NotesListPage />} />

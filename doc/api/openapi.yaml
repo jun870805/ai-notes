@@ -1,0 +1,472 @@
+openapi: 3.0.3
+info:
+  title: AI 工程筆記 API
+  version: 0.1.0
+  description: |
+    AI 工程筆記 MVP API。
+    所有 response 統一使用：
+    - code
+    - success
+    - message
+    - data
+servers:
+  - url: http://localhost:8000/api/v1
+    description: Local development
+tags:
+  - name: Notes
+  - name: AI Search
+  - name: AI Chat
+  - name: AI Tag
+paths:
+  /notes:
+    get:
+      tags: [Notes]
+      summary: 取得筆記列表
+      operationId: listNotes
+      responses:
+        "200":
+          description: 筆記列表
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NoteListEnvelope"
+              examples:
+                default:
+                  value:
+                    code: success
+                    success: true
+                    message: null
+                    data:
+                      - id: 550e8400-e29b-41d4-a716-446655440000
+                        title: FastAPI Auth Notes
+                        content: "# FastAPI Auth Notes\n\nJWT middleware validates bearer token."
+                        tags: [fastapi, auth, backend]
+                        created_at: 2026-05-20T09:00:00Z
+                        updated_at: 2026-05-27T08:15:00Z
+        "500":
+          $ref: "#/components/responses/InternalError"
+    post:
+      tags: [Notes]
+      summary: 建立筆記
+      operationId: createNote
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NoteCreateRequest"
+      responses:
+        "201":
+          description: 建立成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NoteEnvelope"
+              examples:
+                default:
+                  value:
+                    code: success
+                    success: true
+                    message: null
+                    data:
+                      id: 550e8400-e29b-41d4-a716-446655440000
+                      title: FastAPI Auth Notes
+                      content: "# FastAPI Auth Notes\n\nJWT middleware validates bearer token."
+                      tags: [fastapi, auth, backend]
+                      created_at: 2026-05-20T09:00:00Z
+                      updated_at: 2026-05-20T09:00:00Z
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+        "500":
+          $ref: "#/components/responses/InternalError"
+  /notes/{note_id}:
+    get:
+      tags: [Notes]
+      summary: 取得單篇筆記
+      operationId: getNote
+      parameters:
+        - $ref: "#/components/parameters/NoteId"
+      responses:
+        "200":
+          description: 單篇筆記
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NoteEnvelope"
+        "404":
+          $ref: "#/components/responses/NoteNotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+    put:
+      tags: [Notes]
+      summary: 更新筆記
+      operationId: updateNote
+      parameters:
+        - $ref: "#/components/parameters/NoteId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NoteUpdateRequest"
+      responses:
+        "200":
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NoteEnvelope"
+        "404":
+          $ref: "#/components/responses/NoteNotFound"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+        "500":
+          $ref: "#/components/responses/InternalError"
+    delete:
+      tags: [Notes]
+      summary: 刪除筆記
+      operationId: deleteNote
+      parameters:
+        - $ref: "#/components/parameters/NoteId"
+      responses:
+        "200":
+          description: 刪除成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StringEnvelope"
+              examples:
+                default:
+                  value:
+                    code: success
+                    success: true
+                    message: null
+                    data: note deleted
+        "404":
+          $ref: "#/components/responses/NoteNotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+  /ai/search:
+    post:
+      tags: [AI Search]
+      summary: 語意搜尋筆記
+      operationId: searchNotes
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AISearchRequest"
+      responses:
+        "200":
+          description: 搜尋結果
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AISearchEnvelope"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+        "500":
+          $ref: "#/components/responses/InternalError"
+  /ai/chat:
+    post:
+      tags: [AI Chat]
+      summary: 根據筆記內容回答問題
+      operationId: chatWithNotes
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AIChatRequest"
+      responses:
+        "200":
+          description: AI 回答
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AIChatEnvelope"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+        "500":
+          $ref: "#/components/responses/InternalError"
+  /ai/tag:
+    post:
+      tags: [AI Tag]
+      summary: 自動產生筆記標籤
+      operationId: generateTags
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AITagRequest"
+      responses:
+        "200":
+          description: 產生成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AITagEnvelope"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+        "500":
+          $ref: "#/components/responses/InternalError"
+components:
+  parameters:
+    NoteId:
+      name: note_id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  responses:
+    BadRequest:
+      description: Request 格式錯誤
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+          examples:
+            default:
+              value:
+                code: bad_request
+                success: false
+                message: Request body is invalid.
+                data: null
+    ValidationError:
+      description: 欄位驗證失敗
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+          examples:
+            default:
+              value:
+                code: validation_error
+                success: false
+                message: title is required.
+                data: null
+    NoteNotFound:
+      description: 查無筆記
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+          examples:
+            default:
+              value:
+                code: note_not_found
+                success: false
+                message: Note not found.
+                data: null
+    InternalError:
+      description: 未預期錯誤
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+          examples:
+            default:
+              value:
+                code: internal_error
+                success: false
+                message: Internal server error.
+                data: null
+  schemas:
+    Note:
+      type: object
+      required: [id, title, content, created_at, updated_at]
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        content:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    SearchResult:
+      type: object
+      required: [note_id, note_title, chunk_text, similarity_score]
+      properties:
+        note_id:
+          type: string
+          format: uuid
+        note_title:
+          type: string
+        chunk_text:
+          type: string
+        similarity_score:
+          type: number
+          format: float
+    NoteCreateRequest:
+      type: object
+      required: [title, content]
+      properties:
+        title:
+          type: string
+          minLength: 1
+        content:
+          type: string
+          minLength: 1
+        tags:
+          type: array
+          items:
+            type: string
+    NoteUpdateRequest:
+      type: object
+      required: [title, content]
+      properties:
+        title:
+          type: string
+          minLength: 1
+        content:
+          type: string
+          minLength: 1
+        tags:
+          type: array
+          items:
+            type: string
+    AISearchRequest:
+      type: object
+      required: [query]
+      properties:
+        query:
+          type: string
+          minLength: 1
+        top_k:
+          type: integer
+          minimum: 1
+          default: 5
+    AISearchData:
+      type: object
+      required: [results]
+      properties:
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/SearchResult"
+    AIChatRequest:
+      type: object
+      required: [question]
+      properties:
+        question:
+          type: string
+          minLength: 1
+        top_k:
+          type: integer
+          minimum: 1
+          default: 3
+    AIChatData:
+      type: object
+      required: [answer, sources]
+      properties:
+        answer:
+          type: string
+        sources:
+          type: array
+          items:
+            $ref: "#/components/schemas/SearchResult"
+    AITagRequest:
+      type: object
+      required: [title, content]
+      properties:
+        title:
+          type: string
+          minLength: 1
+        content:
+          type: string
+          minLength: 1
+    AITagData:
+      type: object
+      required: [tags]
+      properties:
+        tags:
+          type: array
+          minItems: 3
+          maxItems: 6
+          items:
+            type: string
+    BaseEnvelope:
+      type: object
+      required: [code, success, message, data]
+      properties:
+        code:
+          type: string
+        success:
+          type: boolean
+        message:
+          nullable: true
+          type: string
+    NoteEnvelope:
+      allOf:
+        - $ref: "#/components/schemas/BaseEnvelope"
+        - type: object
+          properties:
+            data:
+              $ref: "#/components/schemas/Note"
+    NoteListEnvelope:
+      allOf:
+        - $ref: "#/components/schemas/BaseEnvelope"
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: "#/components/schemas/Note"
+    AISearchEnvelope:
+      allOf:
+        - $ref: "#/components/schemas/BaseEnvelope"
+        - type: object
+          properties:
+            data:
+              $ref: "#/components/schemas/AISearchData"
+    AIChatEnvelope:
+      allOf:
+        - $ref: "#/components/schemas/BaseEnvelope"
+        - type: object
+          properties:
+            data:
+              $ref: "#/components/schemas/AIChatData"
+    AITagEnvelope:
+      allOf:
+        - $ref: "#/components/schemas/BaseEnvelope"
+        - type: object
+          properties:
+            data:
+              $ref: "#/components/schemas/AITagData"
+    StringEnvelope:
+      allOf:
+        - $ref: "#/components/schemas/BaseEnvelope"
+        - type: object
+          properties:
+            data:
+              type: string
+    ErrorEnvelope:
+      allOf:
+        - $ref: "#/components/schemas/BaseEnvelope"
+        - type: object
+          properties:
+            data:
+              nullable: true
+              type: object
+              additionalProperties: true

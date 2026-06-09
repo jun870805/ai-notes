@@ -56,6 +56,13 @@ MVP 主要資料表：
 
 `note_chunks.embedding` 使用 pgvector 型別，維度需與 `OPENAI_EMBEDDING_MODEL` 輸出一致。
 
+目前 Phase 1 已接好：
+
+- PostgreSQL via Docker Compose
+- Alembic migration on startup
+- `notes`
+- `note_chunks`
+
 ## API Scope
 
 - `GET /notes`
@@ -66,6 +73,33 @@ MVP 主要資料表：
 - `POST /ai/search`
 - `POST /ai/chat`
 - `POST /ai/tag`
+
+## Local Development
+
+安裝依賴：
+
+```bash
+cd server
+python3 -m pip install -e '.[dev]'
+```
+
+本機直接啟動 API：
+
+```bash
+alembic upgrade head
+uvicorn app.main:app --reload
+```
+
+如果要走 Docker Compose：
+
+```bash
+docker compose up --build db server
+```
+
+啟動後可用：
+
+- API: `http://localhost:8000`
+- Health check: `http://localhost:8000/health`
 
 ## 開發注意事項
 

@@ -2,9 +2,11 @@ from __future__ import annotations
 
 from fastapi import FastAPI, HTTPException
 from fastapi.exceptions import RequestValidationError
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from sqlalchemy import text
 
+from app.config import settings
 from app.database import engine
 from app.routers.ai import router as ai_router
 from app.routers.notes import router as notes_router
@@ -13,6 +15,14 @@ from app.schemas.common import error_envelope, success_envelope
 
 def create_app() -> FastAPI:
     app = FastAPI(title="AI 工程筆記 API", version="0.1.0")
+
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=settings.cors_allow_origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
     @app.exception_handler(RequestValidationError)
     async def validation_exception_handler(_request, exc: RequestValidationError) -> JSONResponse:

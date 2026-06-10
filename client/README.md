@@ -20,7 +20,19 @@ npm install
 npm run dev
 ```
 
-開發伺服器啟動後，預設可在 `http://localhost:5173` 開啟。
+開發伺服器啟動後，建議使用 `http://127.0.0.1:5173` 開啟。
+
+若要串接本機 backend，預設會打：
+
+```text
+http://127.0.0.1:8000/api/v1
+```
+
+若要改 API base URL，可在啟動前設定：
+
+```bash
+VITE_API_BASE_URL=http://127.0.0.1:8000/api/v1 npm run dev
+```
 
 ## 常用指令
 
@@ -75,9 +87,8 @@ client/
 
 ## 現況限制
 
-- 目前尚未串接後端 API，資料存在 React local state
-- 重新整理後，新增或修改的筆記不會持久化
-- `AI 搜尋` 與 `AI 對話` 為前端 mock 行為，不是實際 embedding / retrieval / LLM 流程
+- 已串接 backend API，但 AI 流程目前仍是 server placeholder implementation
+- `AI 搜尋` 與 `AI 對話` 的 server response schema 已固定，但還不是實際 embedding / retrieval / LLM 流程
 - Markdown preview 是輕量自製 renderer，僅支援目前 MVP 需要的基本語法
 
 ## 下一步建議

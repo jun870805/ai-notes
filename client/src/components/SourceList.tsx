@@ -21,7 +21,7 @@ export function SourceList({ sources }: { sources: SearchResult[] }) {
           </div>
           <p>{source.chunkText}</p>
           <Link to={`/notes/${source.noteId}`} className="text-link">
-            開啟筆記
+            檢視筆記
           </Link>
         </article>
       ))}

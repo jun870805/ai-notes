@@ -1,12 +1,79 @@
-import { useState } from "react";
+import type { FormEvent, KeyboardEvent } from "react";
+import { useEffect, useState } from "react";
 import { SourceList } from "../components/SourceList";
 import { useNotesStore } from "../App";
+import type { ChatResponse } from "../types";
 
 export function ChatPage() {
   const { askNotes } = useNotesStore();
-  const [question, setQuestion] = useState("我的筆記裡有提到 FastAPI 的 token 驗證怎麼做嗎？");
+  const [question, setQuestion] = useState("");
+  const [submittedQuestion, setSubmittedQuestion] = useState("");
+  const [response, setResponse] = useState<ChatResponse>({ answer: "", sources: [] });
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const response = askNotes(question);
+  useEffect(() => {
+    if (!submittedQuestion) {
+      setResponse({ answer: "", sources: [] });
+      setErrorMessage(null);
+      setIsLoading(false);
+      return;
+    }
+
+    let active = true;
+
+    async function runChat() {
+      try {
+        setIsLoading(true);
+        const nextResponse = await askNotes(submittedQuestion);
+        if (!active) {
+          return;
+        }
+        setResponse(nextResponse);
+        setErrorMessage(null);
+      } catch (error) {
+        if (!active) {
+          return;
+        }
+        setErrorMessage(error instanceof Error ? error.message : "無法完成 AI 對話。");
+      } finally {
+        if (active) {
+          setIsLoading(false);
+        }
+      }
+    }
+
+    void runChat();
+    return () => {
+      active = false;
+    };
+  }, [askNotes, submittedQuestion]);
+
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const nextQuestion = question.trim();
+    if (!nextQuestion || nextQuestion === submittedQuestion) {
+      return;
+    }
+    setSubmittedQuestion(nextQuestion);
+  };
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
+    if (event.key !== "Enter" || event.isComposing) {
+      return;
+    }
+
+    if ((event.metaKey || event.ctrlKey) && event.shiftKey) {
+      return;
+    }
+
+    event.preventDefault();
+    const nextQuestion = question.trim();
+    if (!nextQuestion || nextQuestion === submittedQuestion || isLoading) {
+      return;
+    }
+    setSubmittedQuestion(nextQuestion);
+  };
 
   return (
     <section className="page-grid">
@@ -16,19 +83,30 @@ export function ChatPage() {
         </div>
       </div>
 
-      <section className="panel">
+      <form className="panel search-form" onSubmit={handleSubmit}>
         <label className="field">
           <span>問題</span>
-          <textarea value={question} onChange={(event) => setQuestion(event.target.value)} />
+          <textarea
+            value={question}
+            onChange={(event) => setQuestion(event.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="請輸入想詢問的內容"
+            disabled={isLoading}
+          />
         </label>
-      </section>
+        <div className="button-row button-row--end">
+          <button type="submit" className="button" disabled={isLoading || !question.trim()}>
+            {isLoading ? "整理中..." : "送出問題"}
+          </button>
+        </div>
+      </form>
 
       <section className="answer-card">
         <div className="panel__heading">
           <h3>回答</h3>
           <span>附引用來源的 AI 回答</span>
         </div>
-        <p>{response.answer}</p>
+        <p>{errorMessage ?? (isLoading ? "正在整理回答..." : response.answer)}</p>
       </section>
 
       <section>

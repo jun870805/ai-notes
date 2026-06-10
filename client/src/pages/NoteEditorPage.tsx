@@ -7,12 +7,15 @@ import { useNotesStore } from "../App";
 export function NoteEditorPage() {
   const { noteId } = useParams();
   const navigate = useNavigate();
-  const { getNote, saveNote, deleteNote } = useNotesStore();
+  const { getNote, saveNote, deleteNote, isLoading } = useNotesStore();
   const selectedNote = noteId ? getNote(noteId) : undefined;
 
   const [title, setTitle] = useState("");
   const [content, setContent] = useState(`# 摘要\n\n請用 Markdown 撰寫這篇筆記。\n`);
   const [tagsInput, setTagsInput] = useState("");
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     if (!selectedNote) {
@@ -32,24 +35,77 @@ export function NoteEditorPage() {
     .map((tag) => tag.trim().toLowerCase())
     .filter(Boolean);
 
-  const handleSave = () => {
-    const saved = saveNote({
-      id: selectedNote?.id,
-      title,
-      content,
-      tags: tagList,
-    });
-    navigate(`/notes/${saved.id}`);
+  const handleSave = async () => {
+    try {
+      setIsSaving(true);
+      setSubmitError(null);
+      await saveNote({
+        id: selectedNote?.id,
+        title,
+        content,
+        tags: tagList,
+      });
+      navigate("/notes", {
+        state: {
+          toastMessage: "筆記已儲存。",
+        },
+      });
+    } catch (error) {
+      setSubmitError(error instanceof Error ? error.message : "無法儲存筆記。");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (!selectedNote) {
       return;
     }
 
-    deleteNote(selectedNote.id);
-    navigate("/notes");
+    try {
+      setIsDeleting(true);
+      setSubmitError(null);
+      await deleteNote(selectedNote.id);
+      navigate("/notes");
+    } catch (error) {
+      setSubmitError(error instanceof Error ? error.message : "無法刪除筆記。");
+    } finally {
+      setIsDeleting(false);
+    }
   };
+
+  if (noteId && isLoading) {
+    return (
+      <section className="page-grid">
+        <div className="section-heading">
+          <div>
+            <h2>編輯筆記</h2>
+          </div>
+        </div>
+        <section className="panel">
+          <p>正在載入筆記...</p>
+        </section>
+      </section>
+    );
+  }
+
+  if (noteId && !selectedNote) {
+    return (
+      <section className="page-grid">
+        <div className="section-heading">
+          <div>
+            <h2>編輯筆記</h2>
+          </div>
+          <Link to="/notes" className="button button--quiet">
+            返回筆記列表
+          </Link>
+        </div>
+        <section className="panel">
+          <p>找不到這篇筆記。</p>
+        </section>
+      </section>
+    );
+  }
 
   return (
     <section className="page-grid">
@@ -58,12 +114,17 @@ export function NoteEditorPage() {
           <h2>{selectedNote ? "編輯筆記" : "新增筆記"}</h2>
         </div>
         <div className="button-row">
-          <button type="button" className="button" onClick={handleSave}>
-            儲存筆記
+          <button type="button" className="button" onClick={() => void handleSave()} disabled={isSaving}>
+            {isSaving ? "儲存中..." : "儲存筆記"}
           </button>
           {selectedNote ? (
-            <button type="button" className="button button--quiet" onClick={handleDelete}>
-              刪除筆記
+            <button
+              type="button"
+              className="button button--quiet"
+              onClick={() => void handleDelete()}
+              disabled={isDeleting}
+            >
+              {isDeleting ? "刪除中..." : "刪除筆記"}
             </button>
           ) : (
             <Link to="/notes" className="button button--quiet">
@@ -72,6 +133,11 @@ export function NoteEditorPage() {
           )}
         </div>
       </div>
+      {submitError ? (
+        <section className="panel">
+          <p>{submitError}</p>
+        </section>
+      ) : null}
 
       <div className="editor-layout">
         <section className="panel">

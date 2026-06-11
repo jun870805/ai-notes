@@ -31,7 +31,7 @@
 
 本階段先不包含：
 
-- 真實 OpenAI 串接
+- 真實 Gemini 串接
 - embedding pipeline 實作
 - pgvector 搜尋查詢實作
 - 前端改接 API
@@ -128,7 +128,7 @@
   - AI chat
 - 前端目前仍使用 local mock state，本階段完成後即可進入下一階段做 API 串接
 - 與資料庫的整合先以 PostgreSQL 為主
-- `pgvector` 與 OpenAI 會在後續階段接上，不要求本階段完成真實推論流程
+- `pgvector` 與 Gemini 會在後續階段接上，不要求本階段完成真實推論流程
 
 ## 三、任務拆解與時間估算
 
@@ -173,7 +173,7 @@
 
 - PostgreSQL / pgvector 的最終啟動方式
 - FastAPI 專案結構
-- 後續 OpenAI API key 與模型選型
+- 後續 Gemini API key 與模型選型
 
 ## 六、驗收清單
 

@@ -1,15 +1,18 @@
 # Client
 
-`client/` 是 AI 工程筆記的 React 前端，目前使用 React、TypeScript、Vite、React Router 與 Vitest。這一版已經有可執行的 MVP 畫面與測試，但資料仍以本地 mock state 為主，尚未串接後端 API。
+`client/` 是 AI 工程筆記的 React 前端，目前使用 React、TypeScript、Vite、React Router 與 Vitest。這一版已經有可執行的 MVP 畫面、API 串接與基本測試。
 
 ## 目前功能
 
 - 筆記列表頁
+- 筆記檢視頁
 - 新增 / 編輯筆記頁
 - Markdown 預覽
 - AI 搜尋頁
 - AI 對話頁
 - 繁中介面文案
+- Notes CRUD 串接 backend API
+- AI 搜尋 / AI 對話串接 backend API
 - 基本前端測試與 coverage
 
 ## 啟動方式
@@ -53,10 +56,9 @@ npm run test:watch
 - 主要導覽與繁中文案
 - `AI 搜尋` / `AI 對話` 頁面骨架一致性
 - 新增筆記與儲存流程
+- 檢視 / 編輯筆記流程
 - tab 切換
-- `mockData` 的搜尋與回答邏輯
-
-coverage 目前目標已達 80% 以上。
+- API 串接後的主要互動流程
 
 ## 目錄結構
 
@@ -68,22 +70,23 @@ client/
     pages/        # 各 route 對應頁面
     test/         # 測試初始化與 helper
     types/        # 共用 TypeScript 型別
-    utils/        # 純函式與 mock data
-    App.tsx       # 路由與本地資料狀態
+    utils/        # 純函式與格式化工具
+    App.tsx       # 路由與 notes store
     main.tsx      # 入口點
     styles.css    # 全站樣式
 ```
 
 ## 主要檔案
 
-- `src/App.tsx`：路由、notes store、本地 CRUD / search / chat 行為
+- `src/App.tsx`：路由、notes store、CRUD / search / chat 行為
+- `src/api/`：backend API client
 - `src/components/AppLayout.tsx`：全站版型與主導覽
 - `src/pages/NotesListPage.tsx`：筆記列表
-- `src/pages/NoteEditorPage.tsx`：新增 / 編輯 / 刪除 / 預覽
+- `src/pages/NoteDetailPage.tsx`：筆記預覽
+- `src/pages/NoteEditorPage.tsx`：新增 / 編輯 / 刪除
 - `src/pages/SearchPage.tsx`：AI 搜尋
 - `src/pages/ChatPage.tsx`：AI 對話
-- `src/utils/mockData.ts`：目前畫面用的 sample notes 與搜尋 / 回答邏輯
-- `src/App.test.tsx`、`src/utils/mockData.test.ts`：目前測試案例
+- `src/App.test.tsx`：主要前端互動測試
 
 ## 現況限制
 
@@ -93,7 +96,7 @@ client/
 
 ## 下一步建議
 
-- 將 notes CRUD 改為呼叫後端 API
-- 將 `AI 搜尋` / `AI 對話` 接到實際的 server endpoint
+- 將 `AI 搜尋` 接到真正的 pgvector semantic search
+- 將 `AI 對話` 接到真正的 RAG / LLM workflow
 - 視需要再引入 TanStack Query 管理 server state
 - 補上更多元件級測試與錯誤情境測試

@@ -1,6 +1,6 @@
 # AI Engineer Notes
 
-AI Engineer Notes 是一個面向工程師的 AI 筆記與知識檢索系統。MVP 目標是讓使用者可以建立 Markdown 技術筆記，系統會自動產生標籤、建立 embedding，並支援語意搜尋與基於筆記內容的 AI 問答。
+AI Engineer Notes 是一個面向工程師的 AI 筆記與知識檢索系統。現在這個 repo 已經有可執行的 React 前端、FastAPI 後端、PostgreSQL / pgvector 開發環境，以及建立筆記後的 chunk + embedding pipeline。
 
 ## 產品目標
 
@@ -28,7 +28,7 @@ FastAPI server
   |
   | embeddings / chat / tagging
   v
-OpenAI API
+Gemini API
 ```
 
 ## 主要元件
@@ -39,7 +39,7 @@ OpenAI API
 | Backend API | FastAPI | API、資料處理、AI workflow |
 | Database | PostgreSQL | 儲存 notes 與 metadata |
 | Vector Search | pgvector | 儲存與搜尋 note chunks embeddings |
-| AI Provider | OpenAI API | embeddings、tagging、chat response |
+| AI Provider | Gemini API | embeddings、tagging、chat response |
 | Local Runtime | Docker Compose | 本機開發環境 |
 
 ## 專案結構
@@ -61,11 +61,12 @@ ai-notes/
 ## MVP 功能範圍
 
 - Notes CRUD
+- 筆記檢視頁與編輯頁分流
 - Markdown editor 與 preview
-- AI auto tagging
-- Embedding pipeline
-- Semantic search
-- AI chat with citations
+- AI auto tagging placeholder
+- 建立 / 更新筆記後自動切 chunk 並建立 embedding
+- AI 搜尋前端已串接 API，後端仍為 placeholder search
+- AI 對話前端已串接 API，後端仍為 placeholder chat
 - PostgreSQL + pgvector
 - Docker Compose local development
 
@@ -89,19 +90,57 @@ ai-notes/
 主要變數：
 
 - `DATABASE_URL`
-- `OPENAI_API_KEY`
-- `OPENAI_EMBEDDING_MODEL`
-- `OPENAI_CHAT_MODEL`
+- `GEMINI_API_KEY`
+- `GEMINI_EMBEDDING_MODEL`
+- `GEMINI_CHAT_MODEL`
+- `CORS_ALLOW_ORIGINS`
 
 ## Local Development
 
-預期本機啟動方式：
+先啟動 backend 與 database：
 
 ```bash
-docker compose up --build
+docker compose up --build db server
 ```
 
-目前此 repo 是專案骨架與文件結構；實際前後端程式碼、migration 與 Docker 設定會依開發進度補上。
+再啟動 frontend：
+
+```bash
+cd client
+npm install
+npm run dev -- --host 127.0.0.1 --port 5174
+```
+
+建議開啟：
+
+- Frontend: `http://127.0.0.1:5174/notes`
+- Backend API: `http://127.0.0.1:8000`
+- Health check: `http://127.0.0.1:8000/health`
+
+## 目前狀態
+
+- `client` 已經串接 backend API，不再使用本地 mock state 作為主資料來源
+- `POST /notes`、`PUT /notes/{note_id}` 會同步重建 `note_chunks`
+- 若有設定有效的 `GEMINI_API_KEY`，embedding pipeline 會呼叫 Gemini embeddings
+- 若未設定 key，或目前只是跑測試，會退回 deterministic fallback embeddings
+- `/ai/search`、`/ai/chat` 的前端流程已完成，但 backend 仍是 placeholder，不是真正的 semantic search / RAG
+
+## 驗證指令
+
+前端：
+
+```bash
+cd client
+npm run build
+```
+
+後端：
+
+```bash
+cd server
+pytest -q
+alembic upgrade head
+```
 
 ## 文件
 

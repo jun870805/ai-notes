@@ -1,9 +1,13 @@
 from __future__ import annotations
 
+from datetime import datetime, timezone
+
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.models.note import Note
+from app.models.note_chunk import NoteChunk
+from app.services.chunking_service import ChunkDraft
 
 
 class NoteRepository:
@@ -20,8 +24,7 @@ class NoteRepository:
     def create_note(self, *, title: str, content: str, tags: list[str] | None) -> Note:
         note = Note(title=title, content=content, tags=tags)
         self.db.add(note)
-        self.db.commit()
-        self.db.refresh(note)
+        self.db.flush()
         return note
 
     def update_note(self, note: Note, *, title: str, content: str, tags: list[str] | None) -> Note:
@@ -29,11 +32,29 @@ class NoteRepository:
         note.content = content
         note.tags = tags
         self.db.add(note)
-        self.db.commit()
-        self.db.refresh(note)
+        self.db.flush()
         return note
+
+    def replace_note_chunks(
+        self, note: Note, *, chunks: list[ChunkDraft], embeddings: list[list[float]]
+    ) -> None:
+        note.chunks.clear()
+        self.db.flush()
+        note.embedding_updated_at = datetime.now(timezone.utc)
+        self.db.add_all(
+            [
+                NoteChunk(
+                    note_id=note.id,
+                    chunk_index=chunk.chunk_index,
+                    chunk_text=chunk.chunk_text,
+                    token_count=chunk.token_count,
+                    embedding=embedding,
+                )
+                for chunk, embedding in zip(chunks, embeddings, strict=True)
+            ]
+        )
+        self.db.flush()
 
     def delete_note(self, note: Note) -> None:
         self.db.delete(note)
         self.db.commit()
-

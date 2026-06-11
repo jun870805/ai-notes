@@ -8,7 +8,7 @@
 React frontend
   -> FastAPI backend
   -> PostgreSQL + pgvector
-  -> OpenAI API
+  -> Gemini API
 ```
 
 ## Key Flows

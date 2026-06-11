@@ -7,6 +7,7 @@ from app.database import get_db
 from app.repositories.note_repository import NoteRepository
 from app.schemas.common import Envelope, success_envelope
 from app.schemas.note import NoteCreateRequest, NoteRead, NoteUpdateRequest
+from app.services.embedding_service import EmbeddingService
 from app.services.note_service import NoteService
 from app.services.tagging_service import TaggingService
 
@@ -14,7 +15,7 @@ router = APIRouter(tags=["Notes"])
 
 
 def _service(db: Session) -> NoteService:
-    return NoteService(NoteRepository(db), TaggingService())
+    return NoteService(NoteRepository(db), TaggingService(), EmbeddingService())
 
 
 @router.get("/notes", response_model=Envelope)

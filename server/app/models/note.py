@@ -21,6 +21,6 @@ class Note(Base):
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now()
     )
+    embedding_updated_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
     chunks = relationship("NoteChunk", back_populates="note", cascade="all, delete-orphan")
-

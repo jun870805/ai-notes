@@ -11,6 +11,7 @@ from app.database import engine
 from app.routers.ai import router as ai_router
 from app.routers.notes import router as notes_router
 from app.schemas.common import error_envelope, success_envelope
+from app.services.embedding_service import EmbeddingServiceError
 
 
 def create_app() -> FastAPI:
@@ -38,6 +39,10 @@ def create_app() -> FastAPI:
         else:
             code = "internal_error"
         return JSONResponse(status_code=exc.status_code, content=error_envelope(code, str(exc.detail)))
+
+    @app.exception_handler(EmbeddingServiceError)
+    async def embedding_service_error_handler(_request, exc: EmbeddingServiceError) -> JSONResponse:
+        return JSONResponse(status_code=exc.status_code, content=error_envelope(exc.code, exc.message))
 
     @app.get("/health")
     def healthcheck() -> JSONResponse:

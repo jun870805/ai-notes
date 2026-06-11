@@ -1,6 +1,6 @@
 # Server
 
-`server/` 是 AI Engineer Notes 的 FastAPI 後端。它負責 notes API、AI tagging、embedding pipeline、semantic search 與 RAG chat workflow。
+`server/` 是 AI Engineer Notes 的 FastAPI 後端。它目前已提供 notes CRUD、統一 response envelope、chunk + embedding pipeline，以及 AI search / chat / tag 的 placeholder API。
 
 ## 目標
 
@@ -40,11 +40,12 @@ server/
 
 ## 核心服務
 
-建議服務：
+目前核心服務：
 
 - `note_service.py`
 - `embedding_service.py`
-- `rag_service.py`
+- `search_service.py`
+- `chat_service.py`
 - `tagging_service.py`
 
 ## Database
@@ -54,14 +55,16 @@ MVP 主要資料表：
 - `notes`
 - `note_chunks`
 
-`note_chunks.embedding` 使用 pgvector 型別，維度需與 `OPENAI_EMBEDDING_MODEL` 輸出一致。
+`note_chunks.embedding` 使用 pgvector 型別時，維度需與 `GEMINI_EMBEDDING_MODEL` 輸出一致。
 
-目前 Phase 1 已接好：
+目前已接好：
 
 - PostgreSQL via Docker Compose
 - Alembic migration on startup
 - `notes`
 - `note_chunks`
+- 建立 / 更新筆記後同步重建 `note_chunks`
+- Gemini embedding pipeline（未提供 key 時退回 fallback embeddings）
 
 ## API Scope
 
@@ -109,8 +112,9 @@ CORS_ALLOW_ORIGINS=http://127.0.0.1:5174,http://localhost:5174
 
 ## 開發注意事項
 
-- OpenAI API key 只能透過環境變數讀取。
+- Gemini API key 只能透過環境變數讀取。
 - 新增或更新 note 時，MVP 可同步執行 tagging 與 embedding pipeline。
 - 更新 note 時，應刪除舊 chunks 後重新建立 chunks。
 - 刪除 note 時，相關 chunks 應透過 FK cascade 或 repository 邏輯一併刪除。
 - AI chat 若找不到相關內容，應明確回覆沒有足夠筆記資料。
+- `/ai/search` 與 `/ai/chat` 目前仍是 placeholder，不是真正的 pgvector search / RAG。

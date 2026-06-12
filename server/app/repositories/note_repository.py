@@ -55,6 +55,12 @@ class NoteRepository:
         )
         self.db.flush()
 
+    def build_similarity_search_stmt(self, query_embedding: list[float], *, top_k: int = 5):
+        return select(NoteChunk).order_by(NoteChunk.embedding.cosine_distance(query_embedding)).limit(top_k)
+
+    def search_similar_chunks(self, query_embedding: list[float], *, top_k: int = 5) -> list[NoteChunk]:
+        return list(self.db.scalars(self.build_similarity_search_stmt(query_embedding, top_k=top_k)))
+
     def delete_note(self, note: Note) -> None:
         self.db.delete(note)
         self.db.commit()

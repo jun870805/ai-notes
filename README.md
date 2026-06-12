@@ -92,6 +92,7 @@ ai-notes/
 - `DATABASE_URL`
 - `GEMINI_API_KEY`
 - `GEMINI_EMBEDDING_MODEL`
+- `GEMINI_EMBEDDING_DIMENSIONS`
 - `GEMINI_CHAT_MODEL`
 - `CORS_ALLOW_ORIGINS`
 
@@ -123,6 +124,9 @@ npm run dev -- --host 127.0.0.1 --port 5174
 - `POST /notes`、`PUT /notes/{note_id}` 會同步重建 `note_chunks`
 - 若有設定有效的 `GEMINI_API_KEY`，embedding pipeline 會呼叫 Gemini embeddings
 - 若未設定 key，或目前只是跑測試，會退回 deterministic fallback embeddings
+- `note_chunks.embedding` 已改成真正的 `pgvector` 欄位
+- 目前已可在 repository 層組 similarity search query，但 `/ai/search`、`/ai/chat` 還沒正式接上
+- 目前尚未加入 ANN vector index；現階段先以可用的向量欄位與查詢能力為主
 - `/ai/search`、`/ai/chat` 的前端流程已完成，但 backend 仍是 placeholder，不是真正的 semantic search / RAG
 
 ## 驗證指令

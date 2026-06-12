@@ -17,6 +17,11 @@ def _enable_sqlite_foreign_keys(dbapi_connection, _connection_record) -> None:
         cursor = dbapi_connection.cursor()
         cursor.execute("PRAGMA foreign_keys=ON")
         cursor.close()
+        return
+
+    from pgvector.psycopg import register_vector
+
+    register_vector(dbapi_connection)
 
 
 SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False, future=True)
@@ -28,4 +33,3 @@ def get_db() -> Generator[Session, None, None]:
         yield db
     finally:
         db.close()
-

@@ -25,6 +25,7 @@ class Settings:
     database_url: str = os.getenv("DATABASE_URL", "sqlite:///./ai_notes.db")
     gemini_api_key: str = _normalize_api_key("GEMINI_API_KEY", "OPENAI_API_KEY")
     gemini_embedding_model: str = os.getenv("GEMINI_EMBEDDING_MODEL", os.getenv("OPENAI_EMBEDDING_MODEL", "gemini-embedding-2"))
+    gemini_embedding_dimensions: int = int(os.getenv("GEMINI_EMBEDDING_DIMENSIONS", "3072"))
     gemini_chat_model: str = os.getenv("GEMINI_CHAT_MODEL", os.getenv("OPENAI_CHAT_MODEL", "gemini-3.5-flash"))
     cors_allow_origins: list[str] = field(default_factory=_parse_cors_origins)
 

@@ -55,7 +55,7 @@ MVP 主要資料表：
 - `notes`
 - `note_chunks`
 
-`note_chunks.embedding` 使用 pgvector 型別時，維度需與 `GEMINI_EMBEDDING_MODEL` 輸出一致。
+`note_chunks.embedding` 已改成真正的 pgvector 欄位，維度目前使用 `GEMINI_EMBEDDING_DIMENSIONS=3072`。
 
 目前已接好：
 
@@ -65,6 +65,13 @@ MVP 主要資料表：
 - `note_chunks`
 - 建立 / 更新筆記後同步重建 `note_chunks`
 - Gemini embedding pipeline（未提供 key 時退回 fallback embeddings）
+- similarity search repository prototype
+
+目前尚未接好：
+
+- `/ai/search` 的正式 pgvector similarity search
+- `/ai/chat` 的正式 RAG workflow
+- ANN vector index
 
 ## API Scope
 
@@ -113,6 +120,7 @@ CORS_ALLOW_ORIGINS=http://127.0.0.1:5174,http://localhost:5174
 ## 開發注意事項
 
 - Gemini API key 只能透過環境變數讀取。
+- `GEMINI_EMBEDDING_DIMENSIONS` 目前固定為 `3072`，需與資料庫 vector 欄位一致。
 - 新增或更新 note 時，MVP 可同步執行 tagging 與 embedding pipeline。
 - 更新 note 時，應刪除舊 chunks 後重新建立 chunks。
 - 刪除 note 時，相關 chunks 應透過 FK cascade 或 repository 邏輯一併刪除。

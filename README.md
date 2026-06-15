@@ -126,6 +126,7 @@ npm run dev -- --host 127.0.0.1 --port 5174
 - 若未設定 key，或目前只是跑測試，會退回 deterministic fallback embeddings
 - `note_chunks.embedding` 已改成真正的 `pgvector` 欄位
 - `/ai/search` 已正式接上 Gemini query embedding + `pgvector` similarity search
+- `/ai/search` 目前會以筆記去重，同一篇筆記只顯示最相近的一筆結果
 - 目前尚未加入 ANN vector index；現階段先以可用的向量欄位與查詢能力為主
 - `/ai/chat` 前端流程已完成，但 backend 仍是 placeholder answer generation，尚未完成真正的 RAG
 

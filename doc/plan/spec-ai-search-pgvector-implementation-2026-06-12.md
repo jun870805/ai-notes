@@ -26,6 +26,7 @@
 - query 已先轉為 Gemini embedding
 - 搜尋來源已改為 `note_chunks`
 - 結果已依 similarity 排序並回傳 top-k
+- 對外 API 結果已依 `note_id` 去重，同一篇筆記只保留最相近的一筆
 - API contract 已與目前前端串接格式保持相容
 
 本階段仍不包含：
@@ -79,8 +80,9 @@
 5. 透過 repository 執行 `note_chunks.embedding` cosine distance 查詢
 6. 取回 top-k `NoteChunk`
 7. 以 cosine similarity 計算對外使用的 `similarity_score`
-8. 組成 `SearchResponseData`
-9. 以統一 envelope 回傳
+8. 依 `note_id` 去重，只保留每篇筆記最相近的一筆
+9. 組成 `SearchResponseData`
+10. 以統一 envelope 回傳
 
 #### 空結果流程
 
@@ -231,6 +233,7 @@
 - [x] query 會先轉為 Gemini query embedding
 - [x] 搜尋來源為 `note_chunks`
 - [x] 回傳結果包含 `note_id`、`note_title`、`chunk_text`、`similarity_score`
+- [x] 同一篇筆記若命中多個 chunks，對外結果只保留一筆
 - [x] `top_k` 可正常限制回傳筆數
 - [x] 查無結果時回傳空陣列而非錯誤
 - [x] embedding 失敗時回傳既有錯誤 envelope

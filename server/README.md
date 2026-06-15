@@ -66,6 +66,7 @@ MVP 主要資料表：
 - 建立 / 更新筆記後同步重建 `note_chunks`
 - Gemini embedding pipeline（未提供 key 時退回 fallback embeddings）
 - `/ai/search` 的 Gemini query embedding + pgvector similarity search
+- `/ai/search` 會對結果做 `note_id` 去重，同一篇筆記只回最相近的一筆
 
 目前尚未接好：
 

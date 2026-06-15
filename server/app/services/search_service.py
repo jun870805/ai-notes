@@ -16,15 +16,19 @@ class SearchService:
         self.note_repository = note_repository
         self.embedding_service = embedding_service or EmbeddingService()
 
-    def search_notes(self, query: str, top_k: int) -> list[SearchResult]:
+    def search_notes(self, query: str, top_k: int, *, dedupe_by_note: bool = True) -> list[SearchResult]:
         if not query.strip():
             return []
 
         query_embedding = self.embedding_service.embed_query(query)
-        chunks = self.note_repository.search_similar_chunks(query_embedding, top_k=top_k)
+        chunk_limit = top_k if not dedupe_by_note else max(top_k * 4, top_k)
+        chunks = self.note_repository.search_similar_chunks(query_embedding, top_k=chunk_limit)
 
         results: list[SearchResult] = []
+        seen_note_ids: set[str] = set()
         for chunk in chunks:
+            if dedupe_by_note and chunk.note_id in seen_note_ids:
+                continue
             similarity_score = self._similarity_score(query_embedding, chunk.embedding)
             results.append(
                 SearchResult(
@@ -34,6 +38,9 @@ class SearchService:
                     similarity_score=similarity_score,
                 )
             )
+            seen_note_ids.add(chunk.note_id)
+            if len(results) >= top_k:
+                break
         return results
 
     def _similarity_score(self, query_embedding: list[float], chunk_embedding: list[float]) -> float:

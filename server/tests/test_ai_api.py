@@ -62,6 +62,47 @@ def test_search_notes_returns_empty_results_when_no_chunks_exist(client):
     }
 
 
+def test_search_notes_deduplicates_results_by_note(client, session, monkeypatch):
+    client.post(
+        "/api/v1/notes",
+        json={
+            "title": "pgvector Setup",
+            "content": "# Setup\n\nEnable vector extension.\n\nUse cosine distance for retrieval.",
+            "tags": ["pgvector"],
+        },
+    )
+    client.post(
+        "/api/v1/notes",
+        json={
+            "title": "JWT Notes",
+            "content": "# Auth\n\nValidate bearer token.\n\nRefresh token rotation notes.",
+            "tags": ["auth"],
+        },
+    )
+
+    chunks = list(session.scalars(select(NoteChunk).order_by(NoteChunk.note_id, NoteChunk.chunk_index)))
+    assert len(chunks) >= 4
+
+    note_vectors: dict[str, list[float]] = {}
+    for chunk in chunks:
+        note_vectors.setdefault(chunk.note_id, chunk.embedding)
+
+    query_embedding = list(note_vectors.values())[0]
+
+    def fake_embed_query(_self, _query: str) -> list[float]:
+        return query_embedding
+
+    monkeypatch.setattr("app.services.embedding_service.EmbeddingService.embed_query", fake_embed_query)
+
+    response = client.post("/api/v1/ai/search", json={"query": "setup retrieval", "top_k": 5})
+
+    assert response.status_code == 200
+    payload = response.json()
+    note_ids = [result["note_id"] for result in payload["data"]["results"]]
+    assert len(note_ids) == len(set(note_ids))
+    assert len(note_ids) == 2
+
+
 def test_search_notes_returns_embedding_error_when_query_embedding_fails(client, monkeypatch):
     def raise_rate_limited(_self, _query: str):
         raise EmbeddingServiceError("embedding_rate_limited", "Embedding service is rate limited.", 429)

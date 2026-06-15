@@ -73,6 +73,7 @@ Base path：`/api/v1`
 - 搜尋範圍為 `note_chunks`
 - 結果依 cosine distance 由近到遠排序
 - `similarity_score` 為對 cosine similarity 做 `0..1` clamp 後的數值
+- 同一篇筆記若命中多個 chunks，回傳結果只保留最相近的一筆
 - MVP 預設 Top 5
 
 ## Empty Result

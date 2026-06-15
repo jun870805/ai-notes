@@ -66,7 +66,7 @@ ai-notes/
 - AI auto tagging placeholder
 - 建立 / 更新筆記後自動切 chunk 並建立 embedding
 - AI 搜尋前後端已接通 Gemini query embedding + pgvector search
-- AI 對話前端已串接 API，後端仍為 placeholder answer generation
+- AI 對話前後端已接通 retrieval + Gemini RAG answer generation
 - PostgreSQL + pgvector
 - Docker Compose local development
 
@@ -127,8 +127,9 @@ npm run dev -- --host 127.0.0.1 --port 5174
 - `note_chunks.embedding` 已改成真正的 `pgvector` 欄位
 - `/ai/search` 已正式接上 Gemini query embedding + `pgvector` similarity search
 - `/ai/search` 目前會以筆記去重，同一篇筆記只顯示最相近的一筆結果
+- `/ai/chat` 已正式接上 retrieval + Gemini chat generation；查無資料時會回 fallback answer
+- `/ai/chat` 的 `sources` 目前也會以筆記去重，同一篇筆記只保留一筆來源
 - 目前尚未加入 ANN vector index；現階段先以可用的向量欄位與查詢能力為主
-- `/ai/chat` 前端流程已完成，但 backend 仍是 placeholder answer generation，尚未完成真正的 RAG
 
 ## 驗證指令
 

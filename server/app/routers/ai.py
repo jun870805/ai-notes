@@ -32,7 +32,7 @@ def search_notes(payload: SearchRequest, db: Session = Depends(get_db)) -> dict:
 @router.post("/ai/chat", response_model=Envelope)
 def chat_with_notes(payload: ChatRequest, db: Session = Depends(get_db)) -> dict:
     note_repository = NoteRepository(db)
-    sources = SearchService(note_repository).search_notes(payload.question, payload.top_k, dedupe_by_note=False)
+    sources = SearchService(note_repository).search_notes(payload.question, payload.top_k)
     answer = ChatService().answer(payload.question, sources)
     data = ChatResponseData(answer=answer, sources=sources).model_dump(mode="json")
     return success_envelope(data)

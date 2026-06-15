@@ -59,6 +59,8 @@ Base path：`/api/v1`
 - 回答前需先執行 `semantic search`
 - `sources` 應對應實際注入 prompt 的檢索結果
 - 回答需明確基於檢索內容，不應憑空擴寫
+- `sources` 對外回傳時，會依 `note_id` 去重，同一篇筆記只保留最相近的一筆來源
+- 若 `sources` 為空，直接回傳 fallback answer，不呼叫 chat model
 
 ## No Data Case
 
@@ -80,4 +82,11 @@ Base path：`/api/v1`
 
 - `400 bad_request`
 - `422 validation_error`
+- `429 embedding_rate_limited`
+- `401 embedding_auth_failed`
+- `503 embedding_unavailable`
+- `429 chat_rate_limited`
+- `401 chat_auth_failed`
+- `503 chat_unavailable`
+- `500 chat_request_failed`
 - `500 internal_error`

@@ -65,8 +65,8 @@ ai-notes/
 - Markdown editor 與 preview
 - AI auto tagging placeholder
 - 建立 / 更新筆記後自動切 chunk 並建立 embedding
-- AI 搜尋前端已串接 API，後端仍為 placeholder search
-- AI 對話前端已串接 API，後端仍為 placeholder chat
+- AI 搜尋前後端已接通 Gemini query embedding + pgvector search
+- AI 對話前端已串接 API，後端仍為 placeholder answer generation
 - PostgreSQL + pgvector
 - Docker Compose local development
 
@@ -125,9 +125,9 @@ npm run dev -- --host 127.0.0.1 --port 5174
 - 若有設定有效的 `GEMINI_API_KEY`，embedding pipeline 會呼叫 Gemini embeddings
 - 若未設定 key，或目前只是跑測試，會退回 deterministic fallback embeddings
 - `note_chunks.embedding` 已改成真正的 `pgvector` 欄位
-- 目前已可在 repository 層組 similarity search query，但 `/ai/search`、`/ai/chat` 還沒正式接上
+- `/ai/search` 已正式接上 Gemini query embedding + `pgvector` similarity search
 - 目前尚未加入 ANN vector index；現階段先以可用的向量欄位與查詢能力為主
-- `/ai/search`、`/ai/chat` 的前端流程已完成，但 backend 仍是 placeholder，不是真正的 semantic search / RAG
+- `/ai/chat` 前端流程已完成，但 backend 仍是 placeholder answer generation，尚未完成真正的 RAG
 
 ## 驗證指令
 

@@ -23,17 +23,16 @@ def generate_tags(payload: TagRequest) -> dict:
 
 @router.post("/ai/search", response_model=Envelope)
 def search_notes(payload: SearchRequest, db: Session = Depends(get_db)) -> dict:
-    notes = NoteRepository(db).list_notes()
-    results = SearchService().search_notes(notes, payload.query, payload.top_k)
+    note_repository = NoteRepository(db)
+    results = SearchService(note_repository).search_notes(payload.query, payload.top_k)
     data = SearchResponseData(results=results).model_dump(mode="json")
     return success_envelope(data)
 
 
 @router.post("/ai/chat", response_model=Envelope)
 def chat_with_notes(payload: ChatRequest, db: Session = Depends(get_db)) -> dict:
-    notes = NoteRepository(db).list_notes()
-    sources = SearchService().search_notes(notes, payload.question, payload.top_k)
+    note_repository = NoteRepository(db)
+    sources = SearchService(note_repository).search_notes(payload.question, payload.top_k)
     answer = ChatService().answer(payload.question, sources)
     data = ChatResponseData(answer=answer, sources=sources).model_dump(mode="json")
     return success_envelope(data)
-

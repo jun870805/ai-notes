@@ -69,9 +69,10 @@ Base path：`/api/v1`
 
 ## Business Rules
 
-- `query` 需先轉為 embedding
+- `query` 需先轉為 Gemini retrieval query embedding
 - 搜尋範圍為 `note_chunks`
-- 結果依 `similarity_score desc` 排序
+- 結果依 cosine distance 由近到遠排序
+- `similarity_score` 為對 cosine similarity 做 `0..1` clamp 後的數值
 - MVP 預設 Top 5
 
 ## Empty Result
@@ -93,4 +94,7 @@ Base path：`/api/v1`
 
 - `400 bad_request`
 - `422 validation_error`
+- `429 embedding_rate_limited`
+- `401 embedding_auth_failed`
+- `503 embedding_unavailable`
 - `500 internal_error`

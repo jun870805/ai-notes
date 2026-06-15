@@ -1,6 +1,6 @@
 # Server
 
-`server/` 是 AI Engineer Notes 的 FastAPI 後端。它目前已提供 notes CRUD、統一 response envelope、chunk + embedding pipeline，以及 AI search / chat / tag 的 placeholder API。
+`server/` 是 AI Engineer Notes 的 FastAPI 後端。它目前已提供 notes CRUD、統一 response envelope、chunk + embedding pipeline、正式的 AI search，以及 placeholder 的 AI chat / tag API。
 
 ## 目標
 
@@ -65,12 +65,12 @@ MVP 主要資料表：
 - `note_chunks`
 - 建立 / 更新筆記後同步重建 `note_chunks`
 - Gemini embedding pipeline（未提供 key 時退回 fallback embeddings）
-- similarity search repository prototype
+- `/ai/search` 的 Gemini query embedding + pgvector similarity search
 
 目前尚未接好：
 
-- `/ai/search` 的正式 pgvector similarity search
 - `/ai/chat` 的正式 RAG workflow
+- `/ai/tag` 的正式模型化流程
 - ANN vector index
 
 ## API Scope
@@ -125,4 +125,5 @@ CORS_ALLOW_ORIGINS=http://127.0.0.1:5174,http://localhost:5174
 - 更新 note 時，應刪除舊 chunks 後重新建立 chunks。
 - 刪除 note 時，相關 chunks 應透過 FK cascade 或 repository 邏輯一併刪除。
 - AI chat 若找不到相關內容，應明確回覆沒有足夠筆記資料。
-- `/ai/search` 與 `/ai/chat` 目前仍是 placeholder，不是真正的 pgvector search / RAG。
+- `/ai/search` 已使用 `note_chunks` 與 query embedding 做 similarity search。
+- `/ai/chat` 目前仍是 placeholder answer generation，不是真正的 RAG。

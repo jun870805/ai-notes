@@ -32,12 +32,18 @@ class EmbeddingService:
         formatted_texts = [self._format_document_for_retrieval(title, text) for text in texts]
         return self.embed_texts(formatted_texts)
 
+    def embed_query(self, query: str) -> list[float]:
+        return self.embed_texts([self._format_query_for_retrieval(query)])[0]
+
     def _fallback_embedding(self, text: str, *, dimensions: int = 12) -> list[float]:
         digest = hashlib.sha256(text.encode("utf-8")).digest()
         return [round((digest[index] / 255.0) * 2 - 1, 6) for index in range(dimensions)]
 
     def _format_document_for_retrieval(self, title: str, text: str) -> str:
         return f"title: {title.strip()} | text: {text.strip()}"
+
+    def _format_query_for_retrieval(self, query: str) -> str:
+        return f"task: search result | query: {query.strip()}"
 
     def _gemini_embedding(self, text: str) -> list[float]:
         payload = json.dumps(

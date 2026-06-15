@@ -90,13 +90,13 @@ client/
 
 ## 現況限制
 
-- 已串接 backend API，但 AI 流程目前仍是 server placeholder implementation
-- `AI 搜尋` 與 `AI 對話` 的 server response schema 已固定，但還不是實際 embedding / retrieval / LLM 流程
+- 已串接 backend API，`AI 搜尋` 已接到實際的 Gemini query embedding + pgvector retrieval
+- `AI 對話` 的 server response schema 已固定，但目前仍是 placeholder answer generation，還不是完整 RAG / LLM 流程
 - Markdown preview 是輕量自製 renderer，僅支援目前 MVP 需要的基本語法
 
 ## 下一步建議
 
-- 將 `AI 搜尋` 接到真正的 pgvector semantic search
 - 將 `AI 對話` 接到真正的 RAG / LLM workflow
+- 將 `AI Tag` 接到真正的模型化流程
 - 視需要再引入 TanStack Query 管理 server state
 - 補上更多元件級測試與錯誤情境測試

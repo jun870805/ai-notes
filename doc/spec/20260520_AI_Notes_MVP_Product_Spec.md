@@ -151,14 +151,15 @@ MVP 使用簡單文字切分策略：
 
 ### Feature Description
 
-使用者可以輸入自然語言問題，系統會搜尋最相關的筆記 chunks，並回傳相關筆記結果。
+使用者可以輸入自然語言問題，系統會先從筆記 chunks 中做語意檢索，再以筆記為單位回傳相關結果。
 
 ### Functional Requirements
 
 - 使用者可以輸入 search query
 - 系統會將 query 轉換為 embedding
 - 系統會從 note_chunks 搜尋相似 chunks
-- 系統需回傳相關 chunks 與對應 note
+- 系統對外需以筆記為單位回傳結果，而不是將同一篇筆記拆成多筆結果
+- 每篇筆記若命中多個 chunks，僅保留最相近的一筆作為對外顯示內容
 - 搜尋結果需依相似度排序
 - MVP 預設回傳 Top 5 results
 
@@ -168,7 +169,7 @@ MVP 使用簡單文字切分策略：
 |---|---|---|
 | note_id | UUID | 筆記 ID |
 | note_title | string | 筆記標題 |
-| chunk_text | string | 命中的 chunk 內容 |
+| chunk_text | string | 該筆記最相關的命中片段內容 |
 | similarity_score | float | 相似度分數 |
 
 ---
@@ -183,9 +184,10 @@ MVP 使用簡單文字切分策略：
 
 - 使用者可以輸入問題
 - 系統需先執行 semantic search
-- 系統需將 Top K chunks 注入 prompt context
+- 系統需將 Top K 筆記結果對應的命中內容注入 prompt context
 - AI 回答需基於檢索到的筆記內容
 - 回答需包含引用來源
+- 引用來源對外需以筆記為單位回傳，而不是同一篇筆記重複出現多次
 - 若找不到相關內容，系統需明確回覆沒有足夠筆記資料
 
 ### Response Format

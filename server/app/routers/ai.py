@@ -16,7 +16,7 @@ router = APIRouter(tags=["AI"])
 
 @router.post("/ai/tag", response_model=Envelope)
 def generate_tags(payload: TagRequest) -> dict:
-    tags = TaggingService().generate_tags(payload.title, payload.content)
+    tags = TaggingService().generate_tags(payload.title, payload.content, allow_fallback=False)
     data = TagResponseData(tags=tags).model_dump(mode="json")
     return success_envelope(data)
 

@@ -92,10 +92,11 @@ client/
 
 - 已串接 backend API，`AI 搜尋` 已接到實際的 Gemini query embedding + pgvector retrieval
 - `AI 對話` 已接到後端的 retrieval + Gemini RAG answer generation
+- `AI Tag` 已由後端在 notes 建立 / 更新且未提供 `tags` 時自動生成，前端目前沒有獨立的「重產標籤」操作
 - Markdown preview 是輕量自製 renderer，僅支援目前 MVP 需要的基本語法
 
 ## 下一步建議
 
-- 將 `AI Tag` 接到真正的模型化流程
+- 視需要補上獨立的 tags 重新產生或編輯體驗
 - 視需要再引入 TanStack Query 管理 server state
 - 補上更多元件級測試與錯誤情境測試

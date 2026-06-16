@@ -63,7 +63,7 @@ ai-notes/
 - Notes CRUD
 - 筆記檢視頁與編輯頁分流
 - Markdown editor 與 preview
-- AI auto tagging placeholder
+- AI auto tagging with Gemini generation + fallback
 - 建立 / 更新筆記後自動切 chunk 並建立 embedding
 - AI 搜尋前後端已接通 Gemini query embedding + pgvector search
 - AI 對話前後端已接通 retrieval + Gemini RAG answer generation
@@ -94,6 +94,7 @@ ai-notes/
 - `GEMINI_EMBEDDING_MODEL`
 - `GEMINI_EMBEDDING_DIMENSIONS`
 - `GEMINI_CHAT_MODEL`
+- `GEMINI_TAG_MODEL`
 - `CORS_ALLOW_ORIGINS`
 
 ## Local Development
@@ -129,6 +130,8 @@ npm run dev -- --host 127.0.0.1 --port 5174
 - `/ai/search` 目前會以筆記去重，同一篇筆記只顯示最相近的一筆結果
 - `/ai/chat` 已正式接上 retrieval + Gemini chat generation；查無資料時會回 fallback answer
 - `/ai/chat` 的 `sources` 目前也會以筆記去重，同一篇筆記只保留一筆來源
+- `/ai/tag` 已正式接上 Gemini generation；Notes 在未提供 `tags` 時會自動產生 tags
+- `notes.tags` 在寫入前會做小寫化、kebab-case 與去重
 - 目前尚未加入 ANN vector index；現階段先以可用的向量欄位與查詢能力為主
 
 ## 驗證指令

@@ -5,9 +5,17 @@ from sqlalchemy import select
 from app.models.note_chunk import NoteChunk
 from app.services.chat_service import ChatServiceError
 from app.services.embedding_service import EmbeddingServiceError
+from app.services.tagging_service import TaggingServiceError
 
 
-def test_generate_tags(client):
+def test_generate_tags(client, monkeypatch):
+    def fake_gemini_tags(_self, title: str, content: str) -> list[str]:
+        assert title == "FastAPI WebSocket streaming response implementation notes"
+        assert content == "FastAPI WebSocket streaming response implementation notes."
+        return ["FastAPI", "Bearer Token", "pgvector", "fastapi"]
+
+    monkeypatch.setattr("app.services.tagging_service.settings.gemini_api_key", "test-key")
+    monkeypatch.setattr("app.services.tagging_service.TaggingService._gemini_tags", fake_gemini_tags)
     response = client.post(
         "/api/v1/ai/tag",
         json={
@@ -18,7 +26,32 @@ def test_generate_tags(client):
     assert response.status_code == 200
     payload = response.json()
     assert payload["success"] is True
-    assert len(payload["data"]["tags"]) >= 3
+    assert payload["data"]["tags"] == ["fastapi", "bearer-token", "pgvector"]
+
+
+def test_generate_tags_returns_tag_error_when_generation_fails(client, monkeypatch):
+    monkeypatch.setattr("app.services.tagging_service.settings.gemini_api_key", "test-key")
+
+    def raise_rate_limited(_self, _title: str, _content: str) -> list[str]:
+        raise TaggingServiceError("tag_rate_limited", "Tag service is rate limited.", 429)
+
+    monkeypatch.setattr("app.services.tagging_service.TaggingService._gemini_tags", raise_rate_limited)
+
+    response = client.post(
+        "/api/v1/ai/tag",
+        json={
+            "title": "FastAPI WebSocket streaming response implementation notes",
+            "content": "FastAPI WebSocket streaming response implementation notes.",
+        },
+    )
+
+    assert response.status_code == 429
+    assert response.json() == {
+        "code": "tag_rate_limited",
+        "success": False,
+        "message": "Tag service is rate limited.",
+        "data": None,
+    }
 
 
 def test_search_notes_returns_chunk_matches_from_note_chunks(client, session, monkeypatch):

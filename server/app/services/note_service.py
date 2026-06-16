@@ -22,7 +22,11 @@ class NoteService:
         return self.repository.get_note(note_id)
 
     def create_note(self, title: str, content: str, tags: list[str] | None) -> Note:
-        final_tags = tags if tags is not None else self.tagging_service.generate_tags(title, content)
+        final_tags = (
+            self.tagging_service.normalize_tags(tags)
+            if tags is not None
+            else self.tagging_service.generate_tags(title, content, allow_fallback=True)
+        )
         try:
             note = self.repository.create_note(title=title, content=content, tags=final_tags)
             self._rebuild_note_chunks(note)
@@ -34,7 +38,11 @@ class NoteService:
             raise
 
     def update_note(self, note: Note, title: str, content: str, tags: list[str] | None) -> Note:
-        final_tags = tags if tags is not None else self.tagging_service.generate_tags(title, content)
+        final_tags = (
+            self.tagging_service.normalize_tags(tags)
+            if tags is not None
+            else self.tagging_service.generate_tags(title, content, allow_fallback=True)
+        )
         try:
             updated_note = self.repository.update_note(note, title=title, content=content, tags=final_tags)
             self._rebuild_note_chunks(updated_note)

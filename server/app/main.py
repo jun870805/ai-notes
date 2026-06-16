@@ -13,6 +13,7 @@ from app.routers.notes import router as notes_router
 from app.schemas.common import error_envelope, success_envelope
 from app.services.chat_service import ChatServiceError
 from app.services.embedding_service import EmbeddingServiceError
+from app.services.tagging_service import TaggingServiceError
 
 
 def create_app() -> FastAPI:
@@ -47,6 +48,10 @@ def create_app() -> FastAPI:
 
     @app.exception_handler(ChatServiceError)
     async def chat_service_error_handler(_request, exc: ChatServiceError) -> JSONResponse:
+        return JSONResponse(status_code=exc.status_code, content=error_envelope(exc.code, exc.message))
+
+    @app.exception_handler(TaggingServiceError)
+    async def tagging_service_error_handler(_request, exc: TaggingServiceError) -> JSONResponse:
         return JSONResponse(status_code=exc.status_code, content=error_envelope(exc.code, exc.message))
 
     @app.get("/health")

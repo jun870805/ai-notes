@@ -1,6 +1,6 @@
 # Server
 
-`server/` 是 AI Engineer Notes 的 FastAPI 後端。它目前已提供 notes CRUD、統一 response envelope、chunk + embedding pipeline、正式的 AI search、正式的 AI chat，以及 placeholder 的 AI tag API。
+`server/` 是 AI Engineer Notes 的 FastAPI 後端。它目前已提供 notes CRUD、統一 response envelope、chunk + embedding pipeline、正式的 AI search、正式的 AI chat，以及正式的 AI tag API。
 
 ## 目標
 
@@ -69,10 +69,11 @@ MVP 主要資料表：
 - `/ai/search` 會對結果做 `note_id` 去重，同一篇筆記只回最相近的一筆
 - `/ai/chat` 的 retrieval + Gemini RAG answer generation
 - `/ai/chat` 的 `sources` 目前也會對 `note_id` 去重，同一篇筆記只保留一筆來源
+- `/ai/tag` 的 Gemini generation + sanitize + fallback
+- `POST /notes`、`PUT /notes/{note_id}` 在未提供 `tags` 時會自動產生 tags
 
 目前尚未接好：
 
-- `/ai/tag` 的正式模型化流程
 - ANN vector index
 
 ## API Scope
@@ -123,6 +124,7 @@ CORS_ALLOW_ORIGINS=http://127.0.0.1:5174,http://localhost:5174
 
 - Gemini API key 只能透過環境變數讀取。
 - `GEMINI_EMBEDDING_DIMENSIONS` 目前固定為 `3072`，需與資料庫 vector 欄位一致。
+- `GEMINI_TAG_MODEL` 預設沿用 chat model，也可獨立配置。
 - 新增或更新 note 時，MVP 可同步執行 tagging 與 embedding pipeline。
 - 更新 note 時，應刪除舊 chunks 後重新建立 chunks。
 - 刪除 note 時，相關 chunks 應透過 FK cascade 或 repository 邏輯一併刪除。
@@ -130,3 +132,5 @@ CORS_ALLOW_ORIGINS=http://127.0.0.1:5174,http://localhost:5174
 - `/ai/search` 已使用 `note_chunks` 與 query embedding 做 similarity search。
 - `/ai/chat` 已使用 retrieval 結果作為 context 呼叫 Gemini；若未設定 key，會退回本地 fallback answer。
 - `/ai/chat` 對外 `sources` 目前依筆記去重，避免同一篇筆記重複出現多次。
+- `/ai/tag` 單獨呼叫時會走 strict mode；Notes 自動標籤則會在失敗時 fallback，避免阻斷儲存流程。
+- `notes.tags` 在建立與更新時會統一做 sanitize、kebab-case 與去重。

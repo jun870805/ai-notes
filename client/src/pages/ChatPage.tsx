@@ -1,5 +1,6 @@
 import type { FormEvent, KeyboardEvent } from "react";
 import { useEffect, useState } from "react";
+import { MarkdownPreview } from "../components/MarkdownPreview";
 import { SourceList } from "../components/SourceList";
 import { useNotesStore } from "../App";
 import type { ChatResponse } from "../types";
@@ -106,7 +107,9 @@ export function ChatPage() {
           <h3>回答</h3>
           <span>附引用來源的 AI 回答</span>
         </div>
-        <p>{errorMessage ?? (isLoading ? "正在整理回答..." : response.answer)}</p>
+        <div className="answer-card__body">
+          <MarkdownPreview content={errorMessage ?? (isLoading ? "正在整理回答..." : response.answer)} />
+        </div>
       </section>
 
       <section>

@@ -200,7 +200,7 @@ def test_chat_with_notes_fallback_when_no_data(client):
 
 def test_chat_with_notes_deduplicates_sources_by_note(client, session, monkeypatch):
     def fake_gemini_answer(_self, _question: str, sources):
-        assert len({source.note_id for source in sources}) == len(sources)
+        assert len(sources) > len({source.note_id for source in sources})
         return "這是去重後的回答。"
 
     client.post(
@@ -244,6 +244,49 @@ def test_chat_with_notes_deduplicates_sources_by_note(client, session, monkeypat
     note_ids = [source["note_id"] for source in payload["data"]["sources"]]
     assert len(note_ids) == len(set(note_ids))
     assert payload["data"]["answer"] == "這是去重後的回答。"
+
+
+def test_chat_with_notes_uses_multiple_chunks_for_answer_context(client, session, monkeypatch):
+    def fake_gemini_answer(_self, question: str, sources):
+        assert question == "Flutter clean architecture 有哪些分層？"
+        chunk_texts = [source.chunk_text for source in sources]
+        assert "## Layers" in chunk_texts
+        assert "Split the app into presentation, domain, and data layers." in chunk_texts
+        return "分成 presentation、domain、data 三層。"
+
+    client.post(
+        "/api/v1/notes",
+        json={
+            "title": "Flutter Clean Architecture",
+            "content": (
+                "# Flutter Clean Architecture\n\n"
+                "## Layers\n\n"
+                "Split the app into presentation, domain, and data layers.\n\n"
+                "## State management\n\n"
+                "Use Riverpod for dependency injection and state management."
+            ),
+            "tags": ["flutter", "clean-architecture"],
+        },
+    )
+
+    chunks = list(session.scalars(select(NoteChunk).where(NoteChunk.note_id.is_not(None)).order_by(NoteChunk.chunk_index)))
+    assert len(chunks) >= 4
+
+    def fake_embed_query(_self, _query: str) -> list[float]:
+        return chunks[1].embedding
+
+    monkeypatch.setattr("app.services.chat_service.settings.gemini_api_key", "test-key")
+    monkeypatch.setattr("app.services.chat_service.ChatService._gemini_answer", fake_gemini_answer)
+    monkeypatch.setattr("app.services.embedding_service.EmbeddingService.embed_query", fake_embed_query)
+
+    response = client.post("/api/v1/ai/chat", json={"question": "Flutter clean architecture 有哪些分層？", "top_k": 3})
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["success"] is True
+    assert payload["data"]["answer"] == "分成 presentation、domain、data 三層。"
+    assert len(payload["data"]["sources"]) == 1
+    assert payload["data"]["sources"][0]["note_title"] == "Flutter Clean Architecture"
 
 
 def test_chat_with_notes_returns_chat_error_when_generation_fails(client, session, monkeypatch):

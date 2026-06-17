@@ -14,6 +14,17 @@ from app.services.tagging_service import TaggingService
 router = APIRouter(tags=["AI"])
 
 
+def _dedupe_results_by_note(results):
+    deduped = []
+    seen_note_ids: set[str] = set()
+    for result in results:
+        if result.note_id in seen_note_ids:
+            continue
+        deduped.append(result)
+        seen_note_ids.add(result.note_id)
+    return deduped
+
+
 @router.post("/ai/tag", response_model=Envelope)
 def generate_tags(payload: TagRequest) -> dict:
     tags = TaggingService().generate_tags(payload.title, payload.content, allow_fallback=False)
@@ -32,7 +43,13 @@ def search_notes(payload: SearchRequest, db: Session = Depends(get_db)) -> dict:
 @router.post("/ai/chat", response_model=Envelope)
 def chat_with_notes(payload: ChatRequest, db: Session = Depends(get_db)) -> dict:
     note_repository = NoteRepository(db)
-    sources = SearchService(note_repository).search_notes(payload.question, payload.top_k)
-    answer = ChatService().answer(payload.question, sources)
-    data = ChatResponseData(answer=answer, sources=sources).model_dump(mode="json")
+    search_service = SearchService(note_repository)
+    context_sources = search_service.search_notes(
+        payload.question,
+        max(payload.top_k * 4, payload.top_k),
+        dedupe_by_note=False,
+    )
+    response_sources = _dedupe_results_by_note(context_sources)[: payload.top_k]
+    answer = ChatService().answer(payload.question, context_sources)
+    data = ChatResponseData(answer=answer, sources=response_sources).model_dump(mode="json")
     return success_envelope(data)

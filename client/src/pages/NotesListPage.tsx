@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { MarkdownPreview } from "../components/MarkdownPreview";
 import { TagChip } from "../components/TagChip";
 import { useNotesStore } from "../App";
 import { formatDate } from "../utils/format";
@@ -49,6 +50,19 @@ export function NotesListPage() {
     }
   };
 
+  const renderPreviewContent = (content: string) => {
+    const trimmed = content.trim();
+    if (!trimmed) {
+      return "";
+    }
+
+    if (trimmed.length <= 220) {
+      return trimmed;
+    }
+
+    return `${trimmed.slice(0, 220).trimEnd()}\n\n...`;
+  };
+
   if (isLoading) {
     return (
       <section className="page-grid">
@@ -94,7 +108,9 @@ export function NotesListPage() {
               <span>{note.content.split(/\s+/).filter(Boolean).length} 字</span>
             </div>
             <h3>{note.title}</h3>
-            <p>{note.content.slice(0, 160)}...</p>
+            <div className="note-card__preview">
+              <MarkdownPreview content={renderPreviewContent(note.content)} />
+            </div>
             <div className="tag-row">
               {note.tags.map((tag) => (
                 <TagChip key={tag} tag={tag} />

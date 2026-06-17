@@ -297,9 +297,7 @@ button {
   padding: 22px;
 }
 
-.note-card p,
 .source-card p,
-.answer-card p,
 .markdown-preview p,
 .markdown-preview li {
   margin: 0;
@@ -470,6 +468,67 @@ textarea {
 .answer-card {
   display: grid;
   gap: 14px;
+}
+
+.answer-card__body,
+.note-card__preview,
+.source-card__body {
+  min-width: 0;
+}
+
+.answer-card__body .markdown-preview {
+  gap: 12px;
+}
+
+.note-card__preview .markdown-preview {
+  gap: 8px;
+}
+
+.note-card__preview .markdown-preview > * {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+}
+
+.note-card__preview .markdown-preview h1,
+.note-card__preview .markdown-preview h2,
+.note-card__preview .markdown-preview h3 {
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.note-card__preview .markdown-preview ul {
+  padding-left: 18px;
+}
+
+.note-card__preview .markdown-preview pre {
+  padding: 12px 14px;
+  border-radius: 16px;
+}
+
+.source-card__body .markdown-preview {
+  gap: 10px;
+}
+
+.source-card__body .markdown-preview h1,
+.source-card__body .markdown-preview h2,
+.source-card__body .markdown-preview h3 {
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.source-card__body .markdown-preview ul {
+  padding-left: 18px;
+}
+
+.source-card__body .markdown-preview pre {
+  padding: 12px 14px;
+  border-radius: 16px;
 }
 
 .detail-stack {

@@ -15,6 +15,8 @@ doc/
 ## 目前文件
 
 - `spec/20260520_AI_Notes_MVP_Product_Spec.md`：MVP 產品規格。
+- `2026-06-16-manual-acceptance-checklist.md`：MVP 手動驗收清單。
+- `2026-06-16-search-chat-test-cases.md`：Search / Chat 測試資料與預期結果。
 
 ## 文件維護原則
 

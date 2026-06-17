@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { MarkdownPreview } from "./MarkdownPreview";
 import type { SearchResult } from "../types";
 
 export function SourceList({ sources }: { sources: SearchResult[] }) {
@@ -19,7 +20,9 @@ export function SourceList({ sources }: { sources: SearchResult[] }) {
             <h3>{source.noteTitle}</h3>
             <span>{source.similarityScore.toFixed(2)}</span>
           </div>
-          <p>{source.chunkText}</p>
+          <div className="source-card__body">
+            <MarkdownPreview content={source.chunkText} />
+          </div>
           <Link to={`/notes/${source.noteId}`} className="text-link">
             檢視筆記
           </Link>

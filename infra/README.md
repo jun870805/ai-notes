@@ -25,17 +25,18 @@ infra/
 docker-compose.yml
 ```
 
-服務範圍：
+目前實際服務範圍：
 
-- `frontend`
-- `backend`
 - `db`
+- `server`
 
 預期啟動指令：
 
 ```bash
-docker compose up --build
+docker compose up --build db server
 ```
+
+前端目前維持獨立以 Vite dev server 啟動，不在 Compose 內。
 
 ## PostgreSQL / pgvector
 
@@ -52,3 +53,7 @@ CREATE EXTENSION IF NOT EXISTS vector;
 ```
 
 正式 schema 建議由 Alembic migration 管理。
+
+## 相關文件
+
+- [../doc/2026-06-17-deployment-and-handoff.md](../doc/2026-06-17-deployment-and-handoff.md)

@@ -17,6 +17,7 @@ doc/
 - `spec/20260520_AI_Notes_MVP_Product_Spec.md`：MVP 產品規格。
 - `2026-06-16-manual-acceptance-checklist.md`：MVP 手動驗收清單。
 - `2026-06-16-search-chat-test-cases.md`：Search / Chat 測試資料與預期結果。
+- `2026-06-17-deployment-and-handoff.md`：啟動、交付、驗收與維護指引。
 
 ## 文件維護原則
 

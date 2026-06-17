@@ -120,6 +120,10 @@ docker compose up --build db server
 CORS_ALLOW_ORIGINS=http://127.0.0.1:5174,http://localhost:5174
 ```
 
+交付與啟動整理可參考：
+
+- [../doc/2026-06-17-deployment-and-handoff.md](../doc/2026-06-17-deployment-and-handoff.md)
+
 ## 開發注意事項
 
 - Gemini API key 只能透過環境變數讀取。

@@ -119,6 +119,21 @@ npm run dev -- --host 127.0.0.1 --port 5174
 - Backend API: `http://127.0.0.1:8000`
 - Health check: `http://127.0.0.1:8000/health`
 
+## Deployment And Handoff
+
+如果你要把目前 MVP 交付給下一位開發者或 demo 使用，請先看：
+
+- [doc/2026-06-17-deployment-and-handoff.md](doc/2026-06-17-deployment-and-handoff.md)
+
+裡面已整理：
+
+- 第一次啟動步驟
+- 日常啟停
+- `.env` 設定
+- migration / DB 查詢
+- 交付前驗收清單
+- 常見問題
+
 ## 目前狀態
 
 - `client` 已經串接 backend API，不再使用本地 mock state 作為主資料來源
@@ -155,6 +170,7 @@ alembic upgrade head
 
 - 產品規格：[doc/spec/20260520_AI_Notes_MVP_Product_Spec.md](doc/spec/20260520_AI_Notes_MVP_Product_Spec.md)
 - 文件目錄說明：[doc/README.md](doc/README.md)
+- 交付與部署整理：[doc/2026-06-17-deployment-and-handoff.md](doc/2026-06-17-deployment-and-handoff.md)
 - 前端說明：[client/README.md](client/README.md)
 - 後端說明：[server/README.md](server/README.md)
 - Infra 說明：[infra/README.md](infra/README.md)
